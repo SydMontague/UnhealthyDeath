@@ -1,4 +1,4 @@
 name: UnhealthyDeath
-main: com.syd.unhealthydeath.UnhealthyDeath
-version: 0.2
+main: de.craftlancer.unhealthydeath.UnhealthyDeath
+version: 0.3
 description: modifiy food and health on respawn
