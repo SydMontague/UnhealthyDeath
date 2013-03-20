@@ -12,6 +12,7 @@ public class UnhealthyDeath extends JavaPlugin
     UnhealthyListener listener = new UnhealthyListener(this);
     FileConfiguration config;
     
+    @Override
     public void onEnable()
     {
         log = getLogger();
@@ -24,6 +25,7 @@ public class UnhealthyDeath extends JavaPlugin
         getServer().getPluginManager().registerEvents(listener, this);
     }
     
+    @Override
     public void onDisable()
     {
         config = null;

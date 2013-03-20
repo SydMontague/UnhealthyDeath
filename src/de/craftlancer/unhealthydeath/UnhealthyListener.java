@@ -21,6 +21,9 @@ public class UnhealthyListener implements Listener
         final int food;
         final int health = plugin.config.getInt("health.sethealth");
         
+        final float b = p.getSaturation();
+        final float c = p.getExhaustion();
+        
         if (plugin.config.getString("food.foodchange").equalsIgnoreCase("set"))
             food = plugin.config.getInt("food.setfood");
         else if (plugin.config.getString("food.foodchange").equalsIgnoreCase("keep"))
@@ -30,8 +33,12 @@ public class UnhealthyListener implements Listener
         
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
         {
+            @Override
             public void run()
             {
+                p.setSaturation(b);
+                p.setExhaustion(c);
+                
                 if (food > 20)
                     p.setFoodLevel(20);
                 else
