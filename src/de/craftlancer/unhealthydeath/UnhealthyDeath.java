@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-//TODO Permission Support
 public class UnhealthyDeath extends JavaPlugin
 {
     private UnhealthyListener listener;
