@@ -1,16 +1,20 @@
 package de.craftlancer.unhealthydeath;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-
+//TODO Multiworld Support
+//TODO Permission Support
 public class UnhealthyDeath extends JavaPlugin
 {
-    public Logger log;
-    UnhealthyListener listener = new UnhealthyListener(this);
-    FileConfiguration config;
+    private UnhealthyListener listener = new UnhealthyListener(this);
+    protected Logger log;
+    protected FileConfiguration config;
+    protected Set<String> worlds = new HashSet<String>();
     
     @Override
     public void onEnable()
