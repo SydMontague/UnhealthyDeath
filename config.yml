@@ -4,4 +4,4 @@ food:
   foodchange: keep
   minfood: 0
   setfood: 20
-  substractfood: 0
+  subtractfood: 0

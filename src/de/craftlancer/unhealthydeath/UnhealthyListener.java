@@ -7,29 +7,25 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class UnhealthyListener implements Listener
 {
-    public static UnhealthyDeath plugin;
-
+    protected UnhealthyDeath plugin;
+    
     public UnhealthyListener(UnhealthyDeath instance)
     {
         plugin = instance;
     }
-
+    
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event)
-    {        
+    {
         final Player p = event.getPlayer();
-        final int food;
-        final int health = plugin.config.getInt("health.sethealth");
         
+        if ((!plugin.WORLDS.isEmpty() && !plugin.WORLDS.contains(p.getWorld().getName())) || p.hasPermission("unhealthydeath.exempt"))
+            return;
+        
+        final int food = (plugin.FOOD_KEEPSET) ? plugin.SET_FOOD : p.getFoodLevel() - plugin.SUBTRACT_FOOD;
+        final int health = plugin.SET_HEALTH;
         final float b = p.getSaturation();
         final float c = p.getExhaustion();
-        
-        if (plugin.config.getString("food.foodchange").equalsIgnoreCase("set"))
-            food = plugin.config.getInt("food.setfood");
-        else if (plugin.config.getString("food.foodchange").equalsIgnoreCase("keep"))
-            food = p.getFoodLevel() - plugin.config.getInt("food.substractfood");
-        else
-            food = 0;
         
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
         {
@@ -39,17 +35,14 @@ public class UnhealthyListener implements Listener
                 p.setSaturation(b);
                 p.setExhaustion(c);
                 
-                if (food > 20)
+                if (food >= 20)
                     p.setFoodLevel(20);
+                else if (plugin.MIN_FOOD >= food)
+                    p.setFoodLevel(plugin.MIN_FOOD);
                 else
-                {
-                    if (plugin.config.getInt("food.minfood") > food)
-                        p.setFoodLevel(plugin.config.getInt("food.minfood"));
-                    else
-                        p.setFoodLevel(food);
-                }
+                    p.setFoodLevel(food);
                 
-                if (health <= 0 || health > p.getMaxHealth())
+                if (health >= p.getMaxHealth())
                     p.setHealth(p.getMaxHealth());
                 else
                     p.setHealth(health);
