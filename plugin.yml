@@ -1,7 +1,5 @@
 name: UnhealthyDeath
 main: de.craftlancer.unhealthydeath.UnhealthyDeath
 version: 0.4
-description: modifiy food and health on respawn
-permissions:
-	unhealthydeath.exempt:
-	description: Player with this permissions will spawn with full health and food.
+author: SydMontague
+description: Modifiy food and health on respawn.

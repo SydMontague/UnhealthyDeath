@@ -1,7 +1,7 @@
-health:
-  sethealth: 20
-food:
-  foodchange: keep
-  minfood: 0
-  setfood: 20
-  subtractfood: 0
+group:
+  default:
+    sethealth: 20.0
+    foodchange: keep
+    minfood: 0
+    foodamount: 0
+    worlds: []

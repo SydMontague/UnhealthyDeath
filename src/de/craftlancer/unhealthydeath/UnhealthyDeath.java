@@ -1,35 +1,38 @@
 package de.craftlancer.unhealthydeath;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import de.craftlancer.unhealthydeath.metrics.Metrics;
 
 public class UnhealthyDeath extends JavaPlugin
 {
     private UnhealthyListener listener;
-    protected Logger log;
-    protected FileConfiguration config;
-    
-    protected List<String> WORLDS = new ArrayList<String>();
-    protected int SET_HEALTH = 20;
-    protected boolean FOOD_KEEPSET = false; // false = keep, true = set
-    protected int MIN_FOOD = 0;
-    protected int SET_FOOD = 20;
-    protected int SUBTRACT_FOOD = 0;
+    private FileConfiguration config;
+    private HashMap<String, UnhealthyGroup> groupMap = new HashMap<String, UnhealthyGroup>();
     
     @Override
     public void onEnable()
     {
-        log = getLogger();
-        
         loadConfig();
         
         listener = new UnhealthyListener(this);
         getServer().getPluginManager().registerEvents(listener, this);
+        
+        try
+        {
+            Metrics metrics = new Metrics(this);
+            metrics.start();
+        }
+        catch (IOException e)
+        {
+        }
     }
     
     @Override
@@ -46,21 +49,44 @@ public class UnhealthyDeath extends JavaPlugin
         
         config = getConfig();
         
-        SET_HEALTH = validate(config.getInt("health.sethealth", 20), 1, 2147483647, false);
-        FOOD_KEEPSET = config.getString("food.foodchange", "keep").equalsIgnoreCase("set");
-        MIN_FOOD = validate(config.getInt("food.minfood", 0), 0, 20, true);
-        SET_FOOD = validate(config.getInt("food.setfood", 20), 0, 20, false);
-        SUBTRACT_FOOD = config.getInt("food.subtractfood", 0);
-        SUBTRACT_FOOD = (SUBTRACT_FOOD == 0 && !FOOD_KEEPSET) ? config.getInt("food.substractfood", 0) : 0;
+        if (config.getConfigurationSection("group") == null)
+            update031Config();
         
-        WORLDS = config.getStringList("worlds");
+        for (String key : config.getConfigurationSection("group").getKeys(false))
+        {
+            double health = config.getDouble("group." + key + ".sethealth", 20);
+            boolean keepset = config.getString("group." + key + ".foodchange", "keep").equalsIgnoreCase("set");
+            int minfood = config.getInt("group." + key + ".minfood", 0);
+            int amount = config.getInt("group." + key + ".foodamount", keepset ? 20 : 0);
+            List<String> worlds = config.getStringList("group." + key + ".worlds");
+            
+            groupMap.put(key, new UnhealthyGroup(health, keepset, minfood, amount, worlds));
+        }
     }
     
-    private static int validate(int input, int min, int max, boolean usemin)
+    private void update031Config()
     {
-        if (input > max || input < min)
-            return usemin ? min : max;
-        else
-            return input;
+        boolean b = config.getString("food.foodchange", "keep").equalsIgnoreCase("set");
+        
+        config.set("group.default.sethealth", config.getDouble("health.sethealth", 20));
+        config.set("group.default.foodchange", config.getString("food.foodchange", "keep"));
+        config.set("group.default.minfood", config.getInt("food.minfood", 0));
+        config.set("group.default.foodamount", b ? config.getInt("food.setfood", 20) : config.getInt("food.subtractfood", 0));
+        config.set("group.default.worlds", config.getStringList("worlds"));
+        
+        config.set("health", null);
+        config.set("food", null);
+        config.set("worlds", null);
+        
+        saveConfig();
+    }
+    
+    protected UnhealthyGroup getGroup(Player p)
+    {
+        for (String key : groupMap.keySet())
+            if (p.hasPermission("unhealthydeath.group." + key))
+                return groupMap.get(key);
+        
+        return groupMap.get("default");
     }
 }
