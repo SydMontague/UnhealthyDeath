@@ -27,7 +27,7 @@ public class UnhealthyDeath extends JavaPlugin
         
         try
         {
-            Metrics metrics = new Metrics(this);            
+            Metrics metrics = new Metrics(this);
             metrics.start();
         }
         catch (IOException e)
