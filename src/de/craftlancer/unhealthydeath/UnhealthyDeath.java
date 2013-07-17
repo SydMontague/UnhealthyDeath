@@ -27,7 +27,7 @@ public class UnhealthyDeath extends JavaPlugin
         
         try
         {
-            Metrics metrics = new Metrics(this);
+            Metrics metrics = new Metrics(this);            
             metrics.start();
         }
         catch (IOException e)
@@ -49,7 +49,7 @@ public class UnhealthyDeath extends JavaPlugin
         
         config = getConfig();
         
-        if (config.getConfigurationSection("group") == null)
+        if (config.getConfigurationSection("group").getKeys(false).isEmpty())
             update031Config();
         
         for (String key : config.getConfigurationSection("group").getKeys(false))
